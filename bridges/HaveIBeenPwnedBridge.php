@@ -13,6 +13,11 @@ class HaveIBeenPwnedBridge extends BridgeAbstract {
 				'Date added to HIBP' => 'dateAdded',
 			),
 			'defaultValue' => 'dateAdded',
+		),
+		'item_limit' => array(
+			'name' => 'Limit number of returned items',
+			'type' => 'number',
+			'defaultValue' => 20,
 		)
 	));
 
@@ -58,14 +63,34 @@ class HaveIBeenPwnedBridge extends BridgeAbstract {
 			$item['breachDate'] = strtotime($breachDate[1]);
 			$item['uri'] = self::URI . '/PwnedWebsites' . $permalink;
 
-			$item['content'] = '<p>' . $breach->find('p', 0)->innertext . '<p>';
-			$item['content'] .= '<p>' . $breach->find('p', 1)->innertext . '<p>';
+			$item['content'] = '<p>' . $breach->find('p', 0)->innertext . '</p>';
+			$item['content'] .= '<p>' . $this->breachType($breach) . '</p>';
+			$item['content'] .= '<p>' . $breach->find('p', 1)->innertext . '</p>';
 
 			$this->breaches[] = $item;
 		}
 
 		$this->orderBreaches();
 		$this->createItems();
+	}
+
+	/**
+	 * Extract data breach type(s)
+	 */
+	private function breachType($breach) {
+
+		$content = '';
+
+		if ($breach->find('h3 > i', 0)) {
+
+			foreach ($breach->find('h3 > i') as $i) {
+				$content .= $i->title . '.<br>';
+			}
+
+		}
+
+		return $content;
+
 	}
 
 	/**
@@ -89,6 +114,12 @@ class HaveIBeenPwnedBridge extends BridgeAbstract {
 	 */
 	private function createItems() {
 
+		$limit = $this->getInput('item_limit');
+
+		if ($limit < 1) {
+			$limit = 20;
+		}
+
 		foreach ($this->breaches as $breach) {
 			$item = array();
 
@@ -98,6 +129,10 @@ class HaveIBeenPwnedBridge extends BridgeAbstract {
 			$item['content'] = $breach['content'];
 
 			$this->items[] = $item;
+
+			if (count($this->items) >= $limit) {
+				break;
+			}
 		}
 	}
 }

@@ -127,7 +127,7 @@ class XenForoBridge extends BridgeAbstract {
 		switch($this->version) {
 			case self::XENFORO_VERSION_1:
 
-				$titleBar = $mainContent->find('div.titleBar h1', 0)
+				$titleBar = $mainContent->find('div.titleBar > h1', 0)
 					or returnServerError('Error finding title bar!');
 
 				$this->title = $titleBar->plaintext;
@@ -166,7 +166,7 @@ class XenForoBridge extends BridgeAbstract {
 		$lang = $html->find('html', 0)->lang;
 
 		// Posts are contained in an "ol"
-		$messageList = $html->find('#messageList li')
+		$messageList = $html->find('#messageList > li')
 			or returnServerError('Error finding message list!');
 
 		foreach($messageList as $post) {
@@ -179,7 +179,7 @@ class XenForoBridge extends BridgeAbstract {
 
 			$item['uri'] = $url . '#' . $post->getAttribute('id');
 
-			$content = $post->find('.messageContent article', 0);
+			$content = $post->find('.messageContent > article', 0);
 
 			// Add some style to quotes
 			foreach($content->find('.bbCodeQuote') as $quote) {
@@ -343,7 +343,7 @@ class XenForoBridge extends BridgeAbstract {
 			}
 
 			// Manually extract baseurl and inject sentinel
-			$baseurl = $pageNav->find('li a', -1)->href;
+			$baseurl = $pageNav->find('li > a', -1)->href;
 			$baseurl = str_replace('page-' . $lastpage, 'page-{{sentinel}}', $baseurl);
 
 			$sentinel = '{{sentinel}}';
@@ -395,7 +395,7 @@ class XenForoBridge extends BridgeAbstract {
 	 */
 	private function fixDate($date, $lang = 'en-US') {
 
-		$mnamesen = [
+		$mnamesen = array(
 			'January',
 			'Feburary',
 			'March',
@@ -408,7 +408,7 @@ class XenForoBridge extends BridgeAbstract {
 			'October',
 			'November',
 			'December'
-		];
+		);
 
 		switch($lang) {
 			case 'en-US': // example: Jun 9, 2018 at 11:46 PM
@@ -418,7 +418,7 @@ class XenForoBridge extends BridgeAbstract {
 
 			case 'de-DE': // example: 19 Juli 2018 um 19:27 Uhr
 
-				$mnamesde = [
+				$mnamesde = array(
 					'Januar',
 					'Februar',
 					'März',
@@ -431,9 +431,9 @@ class XenForoBridge extends BridgeAbstract {
 					'Oktober',
 					'November',
 					'Dezember'
-				];
+				);
 
-				$mnamesdeshort = [
+				$mnamesdeshort = array(
 					'Jan.',
 					'Feb.',
 					'Mär.',
@@ -446,7 +446,7 @@ class XenForoBridge extends BridgeAbstract {
 					'Okt.',
 					'Nov.',
 					'Dez.'
-				];
+				);
 
 				$date = str_ireplace($mnamesde, $mnamesen, $date);
 				$date = str_ireplace($mnamesdeshort, $mnamesen, $date);
