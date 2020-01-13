@@ -10,7 +10,7 @@
 ; Find a list of supported timezones at
 ; https://www.php.net/manual/en/timezones.php
 ; timezone = "UTC" (default)
-timezone = "UTC"
+timezone = "Asia/Singapore"
 
 [cache]
 
